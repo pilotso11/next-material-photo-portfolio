@@ -1,0 +1,36 @@
+{
+  "name": "next-material-photo-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "serve": "npx serve@latest out",
+    "lint": "next lint",
+    "resize": "cd public/gallery && ../../src/tools/resize.sh"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/server": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.1",
+    "@mui/material": "^5.14.2",
+    "@next/mdx": "^13.4.12",
+    "@react-hook/window-size": "^3.1.1",
+    "@types/node": "20.4.5",
+    "@types/react": "18.2.18",
+    "@types/react-dom": "18.2.7",
+    "eslint": "8.46.0",
+    "eslint-config-next": "13.4.12",
+    "gray-matter": "^4.0.3",
+    "i": "^0.3.7",
+    "image-size": "^1.0.2",
+    "next": "13.4.12",
+    "npm": "^9.8.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-photo-album": "^2.2.2",
+    "typescript": "5.1.6",
+    "yet-another-react-lightbox": "^3.12.0"
+  }
+}

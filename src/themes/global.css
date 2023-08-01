@@ -1,0 +1,28 @@
+:root {
+    color-scheme: dark light;
+}
+
+/* We want links to be consistently slight bold and underlined, the underlining is good for accessibility */
+a {
+    color: white;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: white;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+a:visited {
+    color: white;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+
+/* Ensure that the tab links are not underlined */
+.tab-link:hover {
+    text-decoration: none;
+}
