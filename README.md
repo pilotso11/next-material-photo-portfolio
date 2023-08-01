@@ -4,7 +4,7 @@ This is a photography portfolio site built with [NEXT.js](https://nextjs.org),
 [react-photo-album](https://react-photo-album.com/), and
 [yet-another-react-lightbox](https://yet-another-react-lightbox.com).
 
-You can find a sample live site at [sophoto.uk](https://sophoto.uk).
+You can find a live sample of this template at [sophoto.uk](https://sophoto.uk).
 
 They key features of this portfolio template are:
 * An about/contact page
@@ -15,6 +15,8 @@ They key features of this portfolio template are:
 * And most importantly, the site is automatically generated from a set of images and a simple markdown file in each gallery folder. 
 * No code is required to add new images.
 
+![Sample Gallery](public/open-graph/sample.png)
+![Sample Gallery](public/open-graph/sample2.png)
 ## Getting Started
 To get started, clone this repository and install the dependencies 
 ```sh
