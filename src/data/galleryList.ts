@@ -39,7 +39,7 @@ export const galleryList = (): gallery[] => {
             }
         }
         catch( err ) {
-            console.log('Error parsing gallery metadata for: ', folder, ' using folder name as title ')
+            console.warn('Unable to parse gallery metadata for: ', folder, ' using folder name as title ')
             return {
                 title: folder,
                 url: '/gallery/' + folder,

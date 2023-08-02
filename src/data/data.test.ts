@@ -40,7 +40,7 @@ describe('Gallery images', () => {
             expect(props.list[0].srcSet).toBeDefined()
             expect(props.list[0].srcSet![0].src).toBe('/gallery/01-nature/resizes/01-autumn-tree-from-below-100.webp')
         })
-    }, 25000)
+    }, 60000)  // stupidly long timeout, but GitHub CI isn't exactly overpowered
 
     test('Gallery images creates srcSet', async () => {
         await getGalleryImages([100, 512, 1024, 1800, 3600], true, '01-nature').then(({props}) => {

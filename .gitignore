@@ -38,3 +38,6 @@ next-env.d.ts
 # Ignore resized image folder
 **/resizes/*.jpg
 **/resizes
+/test-results/
+/playwright-report/
+/playwright/.cache/

@@ -16,7 +16,7 @@ async function verifyOrCreateImage(sizedImage: string, srcPath: string, width: n
     if (!fs.existsSync(sizedImage)) {
         console.log('Resized image needed: ' + sizedImage)
         const dir = path.parse(sizedImage).dir
-        if(!fs.existsSync(dir)) {
+        if (!fs.existsSync(dir)) {
             console.log('Creating folder: ' + dir)
             fs.mkdirSync(dir, {recursive: true})
         }
@@ -30,11 +30,10 @@ async function verifyOrCreateImage(sizedImage: string, srcPath: string, width: n
             .webp(webpOptions)  // quality 75, interlaced, optimized
             .toFile(sizedImage)
             .then((data) => {
-                console.log('Created sized image: ' + sizedImage)
+                console.info('Created sized image: ' + sizedImage)
                 return {width: data.width as number, height: data.height as number}
             }).catch((err) => {
-                console.log('Error creating sized image: ' + sizedImage)
-                console.log(err)
+                console.warn('Error creating sized image: ', sizedImage, ': ', err)
                 throw err
             })
     } else {
