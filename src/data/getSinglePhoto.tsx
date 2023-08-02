@@ -3,11 +3,11 @@
 // inspect the image for its actual size.
 // We make up a title from the file name - minus the sequence
 import sizeOf from 'image-size'
-import {capitalizeFirstLetter, textAfterDash, textUtils} from '@/data/textUtils'
+import {capitalizeFirstLetter, textAfterDash, capitalizeEveryWord} from './textUtils'
 import sharp from 'sharp'
 import fs from 'fs'
 import path from 'path'
-import {webpOptions} from '@/data/webpOptions'
+import {webpOptions} from './webpOptions'
 
 export async function verifyOrCreateImage(sizedImage: string, srcPath: string, width: number) {
     if (!fs.existsSync(sizedImage)) {
@@ -25,9 +25,7 @@ export async function verifyOrCreateImage(sizedImage: string, srcPath: string, w
             .resize( {width: width, height: width, fit: sharp.fit.inside})
             .webp(webpOptions)  // quality 75, interlaced, optimized
             .toFile(sizedImage)
-            .then((info) => {
-                console.log('Created sized image: ' + sizedImage + ": " + JSON.stringify(info))
-            }).catch((err) => {
+            .catch((err) => {
                 console.log("Error resizing image: " + sizedImage + ": " + JSON.stringify(err))
             })
     }
@@ -48,7 +46,7 @@ export async function getSinglePhoto(captionWordCaps: boolean, sizes: number[], 
     const dimensions = sizeOf(srcPath)
 
     // Create our caption from the file name
-    const title = captionWordCaps ? textUtils(textAfterDash(src)) : capitalizeFirstLetter(textAfterDash(src))
+    const title = captionWordCaps ? capitalizeEveryWord(textAfterDash(src)) : capitalizeFirstLetter(textAfterDash(src))
 
     // Create a srcset that includes all the sizes
     let srcSet = await Promise.all(sizes.map(async (size) => {

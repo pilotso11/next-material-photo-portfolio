@@ -45,9 +45,8 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
     return await getGalleryImages(sizes, captionWordCaps, slug)
 }
 
-type galleryPageProps = {
+export type galleryPageProps = {
     slug: string,
-    baseImages: string[],
     galleries: gallery[],
     current: gallery,
     list: Photo[],

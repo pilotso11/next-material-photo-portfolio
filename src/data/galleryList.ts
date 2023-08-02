@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import {capitalizeFirstLetter} from '@/data/textUtils'
+import {capitalizeFirstLetter} from './textUtils'
 
 export type gallery = {
     title: string

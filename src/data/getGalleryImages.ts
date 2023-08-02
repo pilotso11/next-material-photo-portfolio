@@ -4,9 +4,10 @@
  */
 import fs from 'fs'
 import path from 'path'
-import {getSinglePhoto} from '@/data/getSinglePhoto'
-import {galleryList} from '@/data/galleryList'
-import {imageTypes} from '@/options'
+import {getSinglePhoto} from './getSinglePhoto'
+import {gallery, galleryList} from './galleryList'
+import {imageTypes} from '../options'
+import {galleryPageProps} from '../pages/gallery/[slug]'
 
 // Helper function to determine if a file is an image
 function isImage(file: string): boolean {
@@ -15,7 +16,7 @@ function isImage(file: string): boolean {
 }
 
 // Find all images in a gallery and generate the list of photos for the album and lightbox views
-export async function getGalleryImages(sizes: number[], captionWordCaps: boolean, slug: string | string[] | undefined) {
+export async function getGalleryImages(sizes: number[], captionWordCaps: boolean, slug: string | string[] | undefined): Promise<{props: galleryPageProps}> {
     let files = fs.readdirSync('public/gallery/' + slug)
     // Now we need to trim the list down to just our original images
 
@@ -41,10 +42,9 @@ export async function getGalleryImages(sizes: number[], captionWordCaps: boolean
 
     return {
         props: {
-            slug,
-            baseImages,
+            slug: slug as string,
             galleries,
-            current,
+            current: current as gallery,
             list,
         },
     }

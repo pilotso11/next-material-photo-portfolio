@@ -14,6 +14,6 @@ export function textAfterDash(str: string): string {
 }
 
 // Capitalize the first letter of each word in a string
-export function textUtils(str: string): string {
+export function capitalizeEveryWord(str: string): string {
     return str.replace(/\b\w/g, l => l.toUpperCase())
 }
