@@ -3,13 +3,16 @@
 // inspect the image for its actual size.
 // We make up a title from the file name - minus the sequence
 import sizeOf from 'image-size'
-import {capitalizeFirstLetter, textAfterDash, capitalizeEveryWord} from './textUtils'
+import {capitalizeEveryWord, capitalizeFirstLetter, textAfterDash} from './textUtils'
 import sharp from 'sharp'
 import fs from 'fs'
 import path from 'path'
 import {webpOptions} from './webpOptions'
 
-export async function verifyOrCreateImage(sizedImage: string, srcPath: string, width: number) {
+// convenience for width-height tuple
+type WnH = { width: number, height: number }
+
+async function verifyOrCreateImage(sizedImage: string, srcPath: string, width: number): Promise<WnH> {
     if (!fs.existsSync(sizedImage)) {
         console.log('Resized image needed: ' + sizedImage)
         const dir = path.parse(sizedImage).dir
@@ -21,14 +24,24 @@ export async function verifyOrCreateImage(sizedImage: string, srcPath: string, w
         // We resize with maxWidth, maxHeight and fit inside
         // this is equivalent to sips -Z 100 or magick-resize 100x100
         // noinspection JSSuspiciousNameCombination
-        await sharp(srcPath)
-            .resize( {width: width, height: width, fit: sharp.fit.inside})
+        return sharp(srcPath)
+            .withMetadata()
+            .resize({width: width, height: width, fit: sharp.fit.inside})
             .webp(webpOptions)  // quality 75, interlaced, optimized
             .toFile(sizedImage)
-            .catch((err) => {
-                console.log("Error resizing image: " + sizedImage + ": " + JSON.stringify(err))
+            .then((data) => {
+                console.log('Created sized image: ' + sizedImage)
+                return {width: data.width as number, height: data.height as number}
+            }).catch((err) => {
+                console.log('Error creating sized image: ' + sizedImage)
+                console.log(err)
+                throw err
             })
+    } else {
+        const dimensions = sizeOf(sizedImage)
+        return {width: dimensions.width as number, height: dimensions.height as number}
     }
+
 }
 
 // This is the data format for a single photo
@@ -42,7 +55,7 @@ export async function getSinglePhoto(captionWordCaps: boolean, sizes: number[], 
     height: number
 }> {
     const srcUrl = '/gallery/' + slug + '/' + src + ext
-    const srcPath= 'public' + srcUrl
+    const srcPath = 'public' + srcUrl
     const dimensions = sizeOf(srcPath)
 
     // Create our caption from the file name
@@ -52,12 +65,11 @@ export async function getSinglePhoto(captionWordCaps: boolean, sizes: number[], 
     let srcSet = await Promise.all(sizes.map(async (size) => {
         const sizedImageUrl = '/gallery/' + slug + '/resizes/' + src + '-' + size + '.webp'
         const sizedImagePath = 'public' + sizedImageUrl
-        await verifyOrCreateImage(sizedImagePath, srcPath, size )
-        const resizedDimensions = sizeOf(sizedImagePath)
+        const details = await verifyOrCreateImage(sizedImagePath, srcPath, size)
         return {
             src: sizedImageUrl,
-            width: resizedDimensions.width as number,
-            height: resizedDimensions.height as number,
+            width: details.width,
+            height: details.height,
         }
     }))
 

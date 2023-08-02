@@ -29,8 +29,8 @@ describe('textUtils', () => {
 })
 
 describe('Gallery images', () => {
-    test('Gallery images handles various file types', () => {
-        getGalleryImages([100, 512, 1024, 1800, 3600], true, '01-nature').then(({props}) => {
+    test('Gallery images handles various file types', async () => {
+        await getGalleryImages([100, 512, 1024, 1800, 3600], true, '01-nature').then(({props}) => {
             expect(props).toBeDefined()
             expect(props.list).toBeDefined()
             expect(props.list.length).toBe(5)
@@ -41,8 +41,8 @@ describe('Gallery images', () => {
             expect(props.list[0].srcSet![0].src).toBe('/gallery/01-nature/resizes/01-autumn-tree-from-below-100.webp')
         })
     })
-    test('Gallery images creates srcSet', () => {
-        getGalleryImages([100, 512, 1024, 1800, 3600], true, '01-nature').then(({props}) => {
+    test('Gallery images creates srcSet', async () => {
+        await getGalleryImages([100, 512, 1024, 1800, 3600], true, '01-nature').then(({props}) => {
             expect(props).toBeDefined()
             expect(props.list![0].srcSet).toBeDefined()
             expect(props.list![0].srcSet!.length).toBe(6)
@@ -56,7 +56,7 @@ describe('Gallery images', () => {
 })
 
 describe('Gallery Lists', () => {
-    test('Gallery list returns all galleries', () => {
+    test('Gallery list returns all galleries',  () => {
         const galleries = galleryList()
         expect(galleries).toBeDefined()
         expect(galleries.length).toBe(3)
