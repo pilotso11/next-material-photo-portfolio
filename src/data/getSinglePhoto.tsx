@@ -34,7 +34,7 @@ export async function verifyOrCreateImage(sizedImage: string, srcPath: string, w
 }
 
 // This is the data format for a single photo
-export async function getSinglePhoto(captionWordCaps: boolean, sizes: number[], slug: string, src: string): Promise<{
+export async function getSinglePhoto(captionWordCaps: boolean, sizes: number[], slug: string, src: string, ext: string): Promise<{
     src: string;
     width: number;
     alt: string;
@@ -43,7 +43,7 @@ export async function getSinglePhoto(captionWordCaps: boolean, sizes: number[], 
     srcSet: { src: string; width: number; height: number }[];
     height: number
 }> {
-    const srcUrl = '/gallery/' + slug + '/' + src + '.jpg'
+    const srcUrl = '/gallery/' + slug + '/' + src + ext
     const srcPath= 'public' + srcUrl
     const dimensions = sizeOf(srcPath)
 
@@ -72,7 +72,7 @@ export async function getSinglePhoto(captionWordCaps: boolean, sizes: number[], 
 
     // Return the Photo data
     return {
-        src: '/gallery/' + slug + '/' + src + '.jpg',
+        src: '/gallery/' + slug + '/' + src + ext,
         width: dimensions.width as number,
         height: dimensions.height as number,
         title: '',

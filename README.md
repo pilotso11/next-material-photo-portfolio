@@ -34,7 +34,9 @@ This can cause the first page load to appear slow, as it will wait until all the
 before returning the page to ensure you don't see missing images.   
 Subsequent visits will be faster as only missing resized images are generated
 
-If not already performed in dev mode, images will be generated during the `npm run build` step.
+If not already performed in dev mode, images will be generated during the `npm run build` step.  
+To avoid delays on first load in dev mode you can run the build first.  
+If you have a very large set of photos this may be worth it.
 
 Resizing and conversion to WebP is performed using [sharp](https://sharp.pixelplumbing.com/).
 

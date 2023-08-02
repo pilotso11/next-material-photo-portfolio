@@ -3,12 +3,12 @@
 import fs from 'fs'
 import path from 'path'
 import {GetStaticPropsContext} from 'next'
-import {gallery, galleryList} from '@/data/galleryList'
+import {gallery} from '@/data/galleryList'
 import MainFrame from '@/components/MainFrame'
 import {Photo, PhotoAlbum} from 'react-photo-album'
 import {Typography, useMediaQuery} from '@mui/material'
 import Lightbox from 'yet-another-react-lightbox'
-import {useEffect, useState} from 'react'
+import { useEffect, useState} from 'react'
 import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen'
 import Slideshow from 'yet-another-react-lightbox/plugins/slideshow'
 import Zoom from 'yet-another-react-lightbox/plugins/zoom'
@@ -19,22 +19,9 @@ import 'yet-another-react-lightbox/plugins/thumbnails.css'
 import 'yet-another-react-lightbox/plugins/captions.css'
 import {darkTheme} from '@/themes/DarkTheme'
 import {useWindowHeight} from '@react-hook/window-size/throttled'
-import {getSinglePhoto} from '@/data/getSinglePhoto'
+import {getGalleryImages} from '@/data/getGalleryImages'
+import {captionWordCaps, showCaptions, sizes} from '@/options'
 
-// Enable the lightbox captions options
-// Captions are taken from the file name, everything after the first dash ('-')
-const showCaptions = true
-// Capitalize the first letter of each word in the caption.
-// If false only the first word is capitalized.
-// ex:  'The quick brown fox' vs 'The Quick Brown Fox
-const captionWordCaps = true
-
-// These are the fixed sizes we make available
-// in practice this creates images of about 5k, 150k, 400k and 1.5mb in addition to the original source file.
-// I usually make available a 4k source image which will come in at about 5-10mb.  These sizes present
-// efficient downloading of thumbnails, blur on initial render using the 100x image, and sizes for mobile and various desktop
-// screens with the largest sizes looking very good on 4k monitors.  We want to show off the photography after all!
-const sizes = [100, 512, 1024, 1800, 3600]
 
 // Enumerate the folders in /public/gallery as the list of galleries supplied by this slug page
 export async function getStaticPaths() {
@@ -49,47 +36,13 @@ export async function getStaticPaths() {
     }
 }
 
-// Server side run once for each gallery
-// In here we need to load all the photos
 // and turn them into a gallery set
 export async function getStaticProps(ctx: GetStaticPropsContext) {
     // The slug is our folder name
     const {slug} = ctx.params ? ctx.params : {slug: ''}
+
     // List all the images
-    let files = fs.readdirSync('public/gallery/' + slug)
-    // Now we need to trim the list down to just our original images
-    // 1. exclude no .jpg
-    files = files.filter((f) => f.endsWith('.jpg'))
-    // 2. exclude any files that match our -[size].jpg
-    for (let i = 0; i < sizes.length; i++) {
-        files = files.filter(f => !f.endsWith('-' + sizes[i] + '.jpg'))
-    }
-
-    // For base images we want just the core file name - no folder or extension
-    const baseImages = files.map((file) => {
-        return path.parse(file).name
-    })
-
-    // Now turn the list of base names into a list of Photo data for rendering
-    const list = await Promise.all(baseImages.map(async (name) => {
-        return await getSinglePhoto(captionWordCaps, sizes, slug as string, name)
-    }))
-
-    // Get the list galleries, we need to pass this into the main component to create the side menu
-    const galleries = galleryList()
-
-    // Extract our current galliery, as we'll need its title
-    const current = galleries.find((gallery) => gallery.key === slug)
-
-    return {
-        props: {
-            slug,
-            baseImages,
-            galleries,
-            current,
-            list,
-        },
-    }
+    return await getGalleryImages(sizes, captionWordCaps, slug)
 }
 
 type galleryPageProps = {

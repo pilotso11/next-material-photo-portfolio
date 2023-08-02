@@ -5,7 +5,6 @@ const nextConfig = {
         name: 'My Name'
     },
     images: {
-        imageSizes: [100, 512, 1024, 1800, 3600],
         unoptimized: true,
     },
     output: 'export',
