@@ -16,9 +16,9 @@ const baseURL = `http://localhost:${PORT}`
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './tests',
+  testDir: './e2etests',
 
-  /* Do Not Run tests in files in parallel */
+  /* Do Not Run e2etests in files in parallel */
   fullyParallel: false,
 
   /* Longer timeout to support image gen */
@@ -30,7 +30,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
 
-  /* Opt out of parallel tests on CI. */
+  /* Opt out of parallel e2etests on CI. */
   workers: process.env.CI ? 1 : undefined,
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -38,7 +38,7 @@ export default defineConfig({
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 
-  // Run your local dev server before starting the tests:
+  // Run your local dev server before starting the e2etests:
   // https://playwright.dev/docs/test-advanced#launching-a-development-web-server-during-the-tests
   webServer: {
     command: 'npm run dev',
