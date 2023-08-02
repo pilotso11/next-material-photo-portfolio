@@ -6,8 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "serve": "npx serve@latest out",
-    "lint": "next lint",
-    "resize": "cd public/gallery && ../../src/tools/resize.sh"
+    "lint": "next lint"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -30,6 +29,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-photo-album": "^2.2.2",
+    "sharp": "^0.32.4",
     "typescript": "5.1.6",
     "yet-another-react-lightbox": "^3.12.0"
   }

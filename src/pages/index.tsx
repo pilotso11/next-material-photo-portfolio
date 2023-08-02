@@ -40,9 +40,9 @@ export default function Index({galleries}: InferGetStaticPropsType<typeof getSta
                 </Typography>
                 <br/>
                 <Typography variant="body1">
-                    I started taking pictures with my Poloroid camera when I was 10 years old.
-                    I've now spent most of my life savings on camera equipment.  If I didn't take pictures
-                    I cold probably retire now.
+                    I started taking pictures with my Poloroid camera when I was 10 years old. &nbsp;
+                    {"I've"} now spent most of my life savings on camera equipment. &npsp;
+                    If I {"didn't"} take pictures I cold probably retire now.
                 </Typography>
                 <br/>
                 <Typography variant="body1">

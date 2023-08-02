@@ -8,16 +8,33 @@ import MainFrame from '@/components/MainFrame'
 import {Photo, PhotoAlbum} from 'react-photo-album'
 import {Typography, useMediaQuery} from '@mui/material'
 import Lightbox from 'yet-another-react-lightbox'
-import sizeOf from 'image-size'
 import {useEffect, useState} from 'react'
 import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen'
 import Slideshow from 'yet-another-react-lightbox/plugins/slideshow'
 import Zoom from 'yet-another-react-lightbox/plugins/zoom'
 import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails'
+import Captions from 'yet-another-react-lightbox/plugins/captions'
 import 'yet-another-react-lightbox/styles.css'
 import 'yet-another-react-lightbox/plugins/thumbnails.css'
+import 'yet-another-react-lightbox/plugins/captions.css'
 import {darkTheme} from '@/themes/DarkTheme'
 import {useWindowHeight} from '@react-hook/window-size/throttled'
+import {getSinglePhoto} from '@/data/getSinglePhoto'
+
+// Enable the lightbox captions options
+// Captions are taken from the file name, everything after the first dash ('-')
+const showCaptions = true
+// Capitalize the first letter of each word in the caption.
+// If false only the first word is capitalized.
+// ex:  'The quick brown fox' vs 'The Quick Brown Fox
+const captionWordCaps = true
+
+// These are the fixed sizes we make available
+// in practice this creates images of about 5k, 150k, 400k and 1.5mb in addition to the original source file.
+// I usually make available a 4k source image which will come in at about 5-10mb.  These sizes present
+// efficient downloading of thumbnails, blur on initial render using the 100x image, and sizes for mobile and various desktop
+// screens with the largest sizes looking very good on 4k monitors.  We want to show off the photography after all!
+const sizes = [100, 512, 1024, 1800, 3600]
 
 // Enumerate the folders in /public/gallery as the list of galleries supplied by this slug page
 export async function getStaticPaths() {
@@ -29,57 +46,6 @@ export async function getStaticPaths() {
             },
         })),
         fallback: false,
-    }
-}
-
-// These are the fixed sizes we have available
-const sizes = [100, 512, 1024, 1800, 3600]
-
-// Capitalize the first letter of captions
-function capitalizeFirstLetter(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1)
-}
-
-// Get metadata in the library format for a single photo
-// because we are running serverside or precompiled we can
-// inspect the image for its actual size.
-// We make up a title from the file name - minus the sequence
-function getSinglePhoto(slug: string, src: string): {
-    src: string;
-    width: number;
-    alt: string;
-    description: string;
-    title: string;
-    srcSet: { src: string; width: number; height: number }[];
-    height: number
-} {
-    const dimensions = sizeOf('public/gallery/' + slug + '/' + src + '.jpg')
-    const title = capitalizeFirstLetter(src.substring(5).replace(/-/g, ' '))
-
-    // Create a srcset that includes all the sizes
-    let srcSet = sizes.map((size) => {
-        return {
-            src: '/gallery/' + slug + '/' + src + '-' + size + '.jpg ',
-            width: size as number,
-            height: size * dimensions.height! / dimensions.width!,
-        }
-    })
-    // add the original and its size to the srcset
-    srcSet = srcSet.concat([{
-        src: '/gallery/' + slug + '/' + src + '.jpg',
-        width: dimensions.width as number,
-        height: dimensions.height as number,
-    },])
-
-    // Return the Photo data
-    return {
-        src: '/gallery/' + slug + '/' + src + '.jpg',
-        width: dimensions.width as number,
-        height: dimensions.height as number,
-        title: title,
-        description: title,
-        alt: title,
-        srcSet: srcSet,
     }
 }
 
@@ -105,9 +71,9 @@ export async function getStaticProps(ctx: GetStaticPropsContext) {
     })
 
     // Now turn the list of base names into a list of Photo data for rendering
-    const list = baseImages.map((name) => {
-        return getSinglePhoto(slug as string, name)
-    })
+    const list = await Promise.all(baseImages.map(async (name) => {
+        return await getSinglePhoto(captionWordCaps, sizes, slug as string, name)
+    }))
 
     // Get the list galleries, we need to pass this into the main component to create the side menu
     const galleries = galleryList()
@@ -153,9 +119,11 @@ export default function GalleryPage({slug, galleries, current, list}: galleryPag
 
     // We need the window height to calculate the target height of the photo gallery imagers (3 rows)
     const height = useWindowHeight()
+
     // We need to ensure the target height is only computed in an effect, because window will not exist server side
     // (window would work in react, but not in next.js)
     const [targetHeight, setTargetHeight] = useState(100)
+
     // Here's the effect for the calculation
     useEffect(() => {
         setTargetHeight(height / 3)
@@ -164,6 +132,22 @@ export default function GalleryPage({slug, galleries, current, list}: galleryPag
     // Selected photo for the lightbox
     // -1 means we're not in the lightbox and should show the album
     const [index, setIndex] = useState(-1)
+
+    // Our set of lightbox plugins, set in the useEffect below
+    const [lightboxPlugins, setLightboxPlugins] = useState([Fullscreen, Slideshow, Thumbnails, Zoom,])
+
+    // Select lightbox options based on the showCaptions option above and larger screen size (show thumbnails)
+    useEffect( () => {
+        if (showCaptions && isMdOrMore) { // Captions and wide
+            setLightboxPlugins([Fullscreen, Slideshow, Thumbnails, Captions, Zoom,])
+        } else if (isMdOrMore) { // no captions and wide
+            setLightboxPlugins([Fullscreen, Slideshow, Thumbnails, Zoom,])
+        } else if (showCaptions) { // captions and small
+            setLightboxPlugins([Fullscreen, Slideshow, Captions, Zoom,])
+        } else { // no captions and small
+            setLightboxPlugins([Fullscreen, Slideshow, Zoom,])
+        }
+    }, [isMdOrMore])
 
     // Render below - start with the main frame
     return <MainFrame meta={meta} galleries={galleries} index={slug}>
@@ -188,11 +172,8 @@ export default function GalleryPage({slug, galleries, current, list}: galleryPag
                        open={index >= 0}
                        index={index}
                        close={() => setIndex(-1)}
-                       plugins={
-                           // Only render the thumbnails for large screen sizes
-                           isMdOrMore ? [Fullscreen, Slideshow, Thumbnails, Zoom,]
-                               : [Fullscreen, Slideshow, Zoom,]
-                       }
+                       plugins={lightboxPlugins}
+                       captions={{showToggle: true, descriptionTextAlign: 'center'}}
         />}
 
     </MainFrame>

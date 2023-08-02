@@ -7,13 +7,13 @@ This is a photography portfolio site built with [NEXT.js](https://nextjs.org),
 You can find a live sample of this template at [sophoto.uk](https://sophoto.uk).
 
 They key features of this portfolio template are:
-* An about/contact page
-* Well defined gallery pages with a descriptive caption
-* Reactive sizing that works well from mobile to desktop
-* Image resizing to take advantage of the browsers ability to load smaller images when a full size is not needed
-* A dark theme that can be customised
-* And most importantly, the site is automatically generated from a set of images and a simple markdown file in each gallery folder. 
-* No code is required to add new images.
+* Automatic generation of galleries from folders, images and a mdx description.  Just drop in an image or folder, and it will be added automatically in the next build.
+* Image resizing at build time to take advantage of the browsers ability to load smaller images when a full size is not needed and to support NEXT.js static hosting. WebP files are produced similar to the live NEXT.js image optimisation.
+* An about/contact page that can be customised.
+* Attractive gallery pages with a descriptive caption and click to open a lightbox/carousel mode.
+* Reactive sizing and layout that works well from mobile to desktop.   
+* A dark theme that can be customised or disabled
+* No code is required to add new images or galleries.
 
 ![Sample Gallery](public/open-graph/sample.png)
 ![Sample Gallery](public/open-graph/sample2.png)
@@ -28,51 +28,37 @@ To start the development server run
 npm run dev
 ```
 
-To ensure that your images can properly resize you will need to install [ImageMagick](https://imagemagick.org/index.php).
-```sh
-brew install imagemagick
-```
+## Image resizing
+In dev mode resized images will be created on the first visit to a gallery page.  
+This can cause the first page load to appear slow, as it will wait until all the images are generated
+before returning the page to ensure you don't see missing images.   
+Subsequent visits will be faster as only missing resized images are generated
 
-If you want to verify you have the right tools installed, you can run the following script
-```sh
-magick --version
-```
-You should get output similar to the following:
-```
-% magick --version
-Version: ImageMagick 7.1.1-12 Q16-HDRI aarch64 21239 https://imagemagick.org
-Copyright: (C) 1999 ImageMagick Studio LLC
-License: https://imagemagick.org/script/license.php
-Features: Cipher DPC HDRI Modules OpenMP(5.0) 
-Delegates (built-in): bzlib fontconfig freetype gslib heic jng jp2 jpeg jxl lcms lqr ltdl lzma openexr png ps raw tiff webp xml zlib
-Compiler: gcc (4.2)
-```
+If not already performed in dev mode, images will be generated during the `npm run build` step.
 
-If you are on macos the resize script will use `sips` for the resizing.
+Resizing and conversion to WebP is performed using [sharp](https://sharp.pixelplumbing.com/).
 
 ## Customising the Site
 You need to make at the least the following changes:
-- in `next.config.js` edit the site URL
-- in `pages/index.tsx` edit the site title, description, about content and meta data
-- Create your own custom icons and replace the ones in the `public/images/icon.png`
-- Replace the images in `public/images` with your own images (profile, logo etc.)
-- Create your own gallery images and replace the ones in `public/images/gallery`
-- In each gallery create an `_index.mdx` file to describe the gallery content
-- Generate a variety of imager sizes using the script in `src/tools/resize.sh`.  You can run it with `npm run resize`.
-- Run it in public/gallery.
+- In `next.config.js` edit the site URL and title.  The title is displayed above the menu.  The URL is used for metadata, e.g. open graph previews and canonical links.
+- In `pages/index.tsx` edit the site title, description, about content and meta data.
+- Create your own custom icons and replace the ones in the `public/images/icon.png`.
+- Replace the images in `public/images` with your own images (profile, logo etc.).
+- Create your own gallery images and replace the ones in `public/images/gallery`.
+- In each gallery create an `_index.mdx` file to describe the gallery content.  If you don't create an _index.mdx file the site tries its best using the folder name.  For SEO a proper set of metadata is recommended. 
 
 ## Deploying the Site
-To deploy the site, run `npm run build` which will build and export the size.
+To deploy the site, run `npm run build` which will build and export the size including generating the resized images.
 You can then deploy the site using any static site hosting service. 
 For example, I use cloudflare pages to host my site.  
+
+If you want to preview the built site, run `npm run build && npm run serve` which will serve the exported site locally from `/out`.
 
 ## Adding a New Gallery or New Images
 To add a new gallery, create a new folder in `public/images/gallery` and add your images to it.
 Then, create an `_index.mdx` file in the folder to describe the gallery content.
 
 To add images you just need to drop them in the appropriate gallery folder.
-
-In both cases, rerun the `resize.sh` script to generate the new image sizes using You can run it with `npm run resize`.
 
 ## Customising the Theme
 The theme is defined in `src/themes/Darktheme.tsx`. You can customise the theme by editing this file.
@@ -101,6 +87,8 @@ If you want open graph previews, create them by taking screenshots (or using a t
 drop them in `public/open-graph/[path]`. The path should be the same as the gallery path.
 The home page is `public/open-graph/about.png`.
 
+There is a sample custom preview you can use at `/ogimage`.
+
 ## Contributions
 If you have a suggested enhancement, feel free to submit a pull request.
 
@@ -109,8 +97,6 @@ Sample images from:
 * https://www.photos-public-domain.com
 * Eye icon from https://www.pngwing.com/en/free-png-hyliz
 * Photographer: https://www.publicdomainpictures.net/en/view-image.php?image=4360&picture=female-photographer
-
-
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
