@@ -8,6 +8,7 @@ const nextConfig = {
         unoptimized: true,
     },
     output: 'export',
+    staticPageGenerationTimeout: 300,
 }
 
 module.exports = nextConfig
