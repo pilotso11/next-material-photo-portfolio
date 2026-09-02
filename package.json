@@ -33,7 +33,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-photo-album": "^2.4.1",
-    "sharp": "^0.33.5",
+    "sharp": "^0.35.0",
     "typescript": "5.1.6",
     "yet-another-react-lightbox": "^3.21.6"
   },
